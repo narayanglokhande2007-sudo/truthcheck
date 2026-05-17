@@ -1,0 +1,26 @@
+name: Weekly Model Retrain
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'   # har Sunday midnight UTC
+  workflow_dispatch:        # manual trigger (test ke liye)
+
+jobs:
+  retrain:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install torch transformers peft datasets huggingface_hub
+
+      - name: Run weekly retraining
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: python pipeline/train_and_upload.py
